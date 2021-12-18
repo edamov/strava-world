@@ -25,26 +25,20 @@
 			}
 			info = obj.athlete.firstname + ' ' + obj.athlete.lastname
 			token = obj.access_token;
+			console.log(obj)
 
 			var xhr2 = new XMLHttpRequest();
-			xhr2.open("GET", 'https://www.strava.com/api/v3/athlete/activities?per_page=100&' + 'access_token=' + token , true);
+			xhr2.open("GET", 'https://www.strava.com/api/v3/athletes/' + obj.athlete.id  + '/stats?access_token=' + token, true);
 
 			xhr2.onload = function () {
 				const result = JSON.parse(xhr2.response);
 
-				result.forEach(element => {
-					activities.push({
-						distance: element.distance,
-						name: element.name,
-						type: element.type
-					});
-
-					total += element.distance;
-				});
-
-				activities = activities;
-
-				console.log(activities);
+				activities = {
+					run: result.all_run_totals.distance,
+					ride: result.all_ride_totals.distance,
+					swim: result.all_swim_totals.distance,
+					total: result.all_run_totals.distance + result.all_ride_totals.distance + result.all_swim_totals.distance
+				};
 			}
 
 			xhr2.send();
@@ -55,7 +49,7 @@
 	}
 
 	function handleClick() {
-		window.location = `http://www.strava.com/oauth/authorize?client_id=75539&response_type=code&redirect_uri=https://strava-world.vercel.app&approval_prompt=force&scope=activity:read_all`;
+		window.location = `http://www.strava.com/oauth/authorize?client_id=75539&response_type=code&redirect_uri=https://strava-world.vercel.app/&approval_prompt=force&scope=activity:read_all`;
 	}
 
 
@@ -72,15 +66,18 @@
 {info}
 </pre>
 	<div>
-		Сумарна дистанція за останні 100 активностей: <b>{Math.round(total)} метрів</b>
+		{#if activities.hasOwnProperty('total')}
+		Сумарна дистанція: <b>{Math.round(activities.total)} метрів</b>
 		<br>
 		<br>
+
+		Біг: {activities.run}
 		<br>
-		{#each activities as activity}
-				Назва: {activity.name}<br>
-				Тип: {activity.type}<br>
-				Дистанція: {activity.distance}<br><br>
-		{/each}
+		Вело: {activities.ride}
+		<br>
+		Плавання: {activities.swim}
+		{/if}
+		<br>
 	</div>
 </main>
 
