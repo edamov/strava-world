@@ -1,7 +1,8 @@
 <script>
 	export let name;
 
-	let result = null;
+	let result = '';
+	let text = '';
 
 	const queryString = window.location.search;
 	const urlParams = new URLSearchParams(queryString);
@@ -9,47 +10,23 @@
 		const code = urlParams.get('code');
 		console.log(code);
 
-		doPost();
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", 'https://www.strava.com/api/v3/oauth/token', true);
 
-	// 	curl -X POST https://www.strava.com/api/v3/oauth/token \
-	// 			-d client_id=75539 \
-  // -d client_secret=333336ab8d983b96baef6a6c0c36bfe7b0ef374b \
-  // -d code=352f251097adc5f09513e56526b761e935051788 \
-  // -d grant_type=authorization_code
+		xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
-		async function doPost () {
-			const res = await fetch('https://www.strava.com/api/v3/oauth/token', {
-				method: 'POST',
-				body: JSON.stringify({
-					client_id: 75539,
-					client_secret: "333336ab8d983b96baef6a6c0c36bfe7b0ef374b",
-					code: code,
-					grant_type: "authorization_code"
-				})
-			})
-
-			const json = await res.json()
-			result = JSON.stringify(json)
+		xhr.onload = function() {//Вызывает функцию при смене состояния.
+			const obj = JSON.parse(xhr.response);
+			name = obj.athlete.firstname;
+			result = obj.athlete.firstname + ' ' + obj.athlete.lastname
 		}
-
-		// var xhr = new XMLHttpRequest();
-		// xhr.open("POST", 'https://www.strava.com/api/v3/oauth/token', true);
-	//
-	// 	xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	//
-	// 	xhr.onreadystatechange = function() {//Вызывает функцию при смене состояния.
-	// 		if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
-	//
-	// 		}
-	// 		console.log(xhr.statusText)
-	// 	}
-	// 	xhr.send(`client_id=75539&client_secret=333336ab8d983b96baef6a6c0c36bfe7b0ef374b&code=${code}&grant_type=authorization_code`);
+		xhr.send(`client_id=75539&client_secret=333336ab8d983b96baef6a6c0c36bfe7b0ef374b&code=${code}&grant_type=authorization_code`);
 	// } else {
 	//
 	}
 
 	function handleClick() {
-		window.location = `http://www.strava.com/oauth/authorize?client_id=75539&response_type=code&redirect_uri=https://strava-world.vercel.app&approval_prompt=force&scope=activity:read_all`;
+		window.location = `http://www.strava.com/oauth/authorize?client_id=75539&response_type=code&redirect_uri=http://localhost:5000&approval_prompt=force&scope=read`;
 	}
 
 
