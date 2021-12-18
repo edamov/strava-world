@@ -49,7 +49,7 @@
 	}
 
 	function handleClick() {
-		window.location = `http://www.strava.com/oauth/authorize?client_id=75539&response_type=code&redirect_uri=http://localhost:5000&approval_prompt=force&scope=activity:read_all`;
+		window.location = `http://www.strava.com/oauth/authorize?client_id=75539&response_type=code&redirect_uri=https://strava-world.vercel.app&approval_prompt=force&scope=activity:read_all`;
 	}
 
 
